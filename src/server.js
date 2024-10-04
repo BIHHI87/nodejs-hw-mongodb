@@ -1,61 +1,59 @@
-import express from "express"
-import cors from "cors"
-import pino from "pino-http"
-import { env } from "./utils/env.js"
-import * as contactServices from "./services/contacts.js"
+import express from 'express';
+import pino from 'pino-http';
+import cors from 'cors';
+import { env } from './utils/env.js';
+import { ENV_VARS } from './constants/index.js';
+import {
+  notFoundMiddleware,
+  errorHandlerMiddleware,
+} from './middlewares/index.js';
+import { studentService } from './services/index.js';
 
-const PORT = Number(env("PORT", 3000))
+const PORT = Number(env(ENV_VARS.PORT, '3000'));
 
-export const setupServer = () => {
-    const app = express()
+export const startServer = () => {
+  const app = express();
 
-    const logger = pino({
-        transport: {
-            target: "pino-pretty"
-        }
-    })
+  app.use(express.json());
+  app.use(cors());
 
-    app.use(logger)
-    app.use(cors())
-    app.use(express.json())
+  app.use(
+    pino({
+      transport: {
+        target: 'pino-pretty',
+      },
+    }),
+  );
 
-    app.get("/contacts", async (req, res) => {
-        const data = await contactServices.getAllContacts()
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'Hello, World!',
+    });
+  });
 
-        res.json({
-            status: 200,
-            message: "Successfully found contacts",
-            data
-        })
-    })
-    app.get("/contacts/:contactId", async (req, res) => {
-        const { contactId } = req.params
+  app.get('/students', async (req, res) => {
+    const students = await studentService.getAllStudents();
 
-        const data = await contactServices.getContactByID(contactId)
+    res.status(200).json({
+      students,
+    });
+  });
 
-        if (!data) {
-            return res.status(404).json({
-                message: `Contact with id=${contactId} nor found`
-            })
-        }
+  app.get('/students/:studentId', async (req, res) => {
+    const { studentId } = req.params;
 
-        res.json({
-            status: 200,
-            message: `Contact with ${contactId} successfully found`,
-            data
-        })
-    })
+    const student = await studentService.getStudentsById(studentId);
 
-    app.use((req, res) => {
-        res.status(404).json({
-            message: `${req.url} not found`
-        })
-    })
+    res.status(200).json({
+      student,
+    });
+  });
 
-    app.use((error, req, res) => {
-        res.status(500).json({
-            message: error.message
-        })
-    })
-    app.listen(PORT, () => console.log("Server is running on port 3000"))
+  app.use(notFoundMiddleware);
+
+  app.use(errorHandlerMiddleware);
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 };

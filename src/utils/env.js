@@ -1,7 +1,12 @@
-import { getAllContacts } from "../services/contacts"
+import dotenv from 'dotenv';
 
-PORT=3000
-MONGODB_USER=BIHHI87
-MONGODB_PASSWORD=WfJdChrlQoSkDDBz 
-MONGODB_URL=bihhi87.7q1o4.mongodb.net
-MONGODB_DB=students
+dotenv.config();
+
+export const env = (envName, defaultValue) => {
+  const value = process.env[`${envName}`];
+
+  if (value) return value;
+  if (defaultValue) return defaultValue;
+
+  throw new Error(`Missing: process.env[${envName}]`);
+};
