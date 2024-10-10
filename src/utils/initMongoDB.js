@@ -9,7 +9,7 @@ export const initMongoDB = async () => {
     const db = env(MONGO_DB_VARS.MONGO_DB);
 
     // Формуємо правильний URL без зайвих частин
-    const url = `mongodb+srv://${user}:${password}@bihhi87.7q1o4.mongodb.net/${db}?retryWrites=true&w=majority`;
+    const url = `mongodb+srv://${BIHHI87}:${WfJdChrlQoSkDDBz}@bihhi87.7q1o4.mongodb.net/${db}?retryWrites=true&w=majority`;
 
     await mongoose.connect(url);
 
