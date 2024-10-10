@@ -13,14 +13,11 @@ export const startServer = () => {
 
   app.use(express.json());
   app.use(cors());
-
-  app.use(
-    pino({
-      transport: {
-        target: 'pino-pretty',
-      },
-    }),
-  );
+  app.use(pino({
+    transport: {
+      target: 'pino-pretty',
+    },
+  }));
 
   app.get('/', (req, res) => {
     res.json({
@@ -47,6 +44,8 @@ export const startServer = () => {
 
   app.get('/contacts/:contactId', async (req, res) => {
     const { contactId } = req.params; 
+    console.log('Contact ID from request:', contactId); 
+
     try {
       const contact = await contactService.getContactByID(contactId); 
       if (!contact) {
