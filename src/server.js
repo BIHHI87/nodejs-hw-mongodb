@@ -4,7 +4,6 @@ import cors from 'cors';
 import { env } from './utils/env.js';
 import { ENV_VARS } from './constants/index.js';
 import { notFoundMiddleware, errorHandlerMiddleware } from './middlewares/index.js';
-import { studentService } from './services/index.js';
 import { contactService } from './services/index.js'; 
 
 const PORT = Number(env(ENV_VARS.PORT, '3000'));
@@ -29,19 +28,21 @@ export const startServer = () => {
     });
   });
 
-  app.get('/students', async (req, res) => {
-    const students = await studentService.getAllStudents();
-    res.status(200).json({
-      students,
-    });
-  });
-
-  app.get('/students/:studentId', async (req, res) => {
-    const { studentId } = req.params;
-    const student = await studentService.getStudentById(studentId);
-    res.status(200).json({
-      student,
-    });
+  app.get('/contacts', async (req, res) => {
+    try {
+      const contacts = await contactService.getAllContacts(); 
+      res.status(200).json({
+        status: 200,
+        message: 'Successfully found contacts!',
+        data: contacts, 
+      });
+    } catch (error) {
+      console.error('Error retrieving contacts:', error); 
+      res.status(500).json({
+        message: 'An error occurred while retrieving contacts',
+        error: error.message, 
+      });
+    }
   });
 
   app.get('/contacts/:contactId', async (req, res) => {
@@ -55,6 +56,7 @@ export const startServer = () => {
       }
 
       res.status(200).json({
+        status: 200,
         message: 'Successfully found contact!',
         data: contact, 
       });
