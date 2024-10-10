@@ -1,21 +1,27 @@
 import mongoose from 'mongoose';
-import { env } from './env.js';
-import { MONGO_DB_VARS } from '../constants/index.js';
+import dotenv from 'dotenv';
 
-export const initMongoDB = async () => {
+dotenv.config();
+
+const initMongoDB = async () => {
   try {
-    const user = env(MONGO_DB_VARS.MONGO_USER);
-    const password = env(MONGO_DB_VARS.MONGO_PASSWORD);
-    const db = env(MONGO_DB_VARS.MONGO_DB);
+    const user = process.env.MONGO_USER;
+    const password = process.env.MONGO_PASSWORD;
+    const url = process.env.MONGO_URL;
+    const dbName = process.env.MONGO_DB;
 
-    // Формуємо правильний URL без зайвих частин
-    const url = `mongodb+srv://${BIHHI87}:${WfJdChrlQoSkDDBz}@bihhi87.7q1o4.mongodb.net/${db}?retryWrites=true&w=majority`;
+    const connectionString = `mongodb+srv://${user}:${password}@${url}/${dbName}?retryWrites=true&w=majority`;
 
-    await mongoose.connect(url);
+    await mongoose.connect(connectionString, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
-    console.log('MongoDB connection successfuly');
+    console.log('Mongo connection successfully established!');
   } catch (error) {
-    console.log('Error while connection to MongoDB', error);
-    throw error;
+    console.error('Mongo connection failed:', error);
+    process.exit(1);
   }
 };
+
+export { initMongoDB }; 
