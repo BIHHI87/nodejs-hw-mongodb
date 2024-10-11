@@ -1,4 +1,3 @@
-// src/db/models/contact.js
 import { Schema, model } from 'mongoose';
 
 const contactSchema = new Schema(
@@ -31,4 +30,3 @@ const contactSchema = new Schema(
 );
 
 export const Contact = model('Contact', contactSchema); 
-
