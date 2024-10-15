@@ -1,8 +1,10 @@
 import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
+import contactsRouter from './routers/contacts.js';
 import { env } from './utils/env.js';
-import { getAllContacts, getContactById } from './services/contacts.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
 const PORT = Number(env('PORT', '3000'));
 
@@ -17,7 +19,7 @@ export const startServer = () => {
       transport: {
         target: 'pino-pretty',
       },
-    })
+    }),
   );
 
   app.get('/', (req, res) => {
@@ -26,61 +28,10 @@ export const startServer = () => {
     });
   });
 
-  app.get('/contacts', async (req, res) => {
-    try {
-      const contacts = await getAllContacts();
-      res.status(200).json({
-        status: 200,
-        message: 'Successfully found contacts!',
-        data: contacts,
-      });
-    } catch (error) {
-      console.error('Error retrieving contacts:', error);
-      res.status(500).json({
-        message: 'An error occurred while retrieving contacts',
-        error: error.message,
-      });
-    }
-  });
+  app.use(contactsRouter);
 
-  app.get('/contacts/:contactId', async (req, res) => {
-    const { contactId } = req.params;
-    console.log('Contact ID from request:', contactId);
-
-    try {
-      const contact = await getContactById(contactId);
-      if (!contact) {
-        return res.status(404).json({
-          message: 'Contact not found',
-        });
-      }
-
-      res.status(200).json({
-        status: 200,
-        message: 'Successfully found contact!',
-        data: contact,
-      });
-    } catch (error) {
-      console.error('Error retrieving contact:', error);
-      res.status(500).json({
-        message: 'An error occurred while retrieving the contact',
-        error: error.message,
-      });
-    }
-  });
-
-  app.use('*', (req, res) => {
-    res.status(404).json({
-      message: 'Not found',
-    });
-  });
-
-  app.use((err, req, res) => {
-    res.status(500).json({
-      message: 'Something went wrong',
-      error: err.message,
-    });
-  });
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
