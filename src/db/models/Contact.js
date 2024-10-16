@@ -12,12 +12,10 @@ const contactSchema = new Schema(
     },
     email: {
       type: String,
-      required: false,
     },
     isFavourite: {
       type: Boolean,
       default: false,
-      required: true,
     },
     contactType: {
       type: String,
@@ -26,9 +24,10 @@ const contactSchema = new Schema(
       default: 'personal',
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    versionKey: false,
+  }
 );
 
-const ContactCollection = model('Contact', contactSchema);
-
-export default ContactCollection; 
+export const ContactCollection = model('Contact', contactSchema);
