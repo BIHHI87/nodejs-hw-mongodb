@@ -9,7 +9,14 @@ import {
 
 export const getContactsController = async (req, res, next) => {
   try {
-    const contacts = await getAllContacts(req.query);
+    const { page, perPage, sortBy, sortOrder, ...filter } = req.query;
+    const contacts = await getAllContacts({
+      page: Number(page),
+      perPage: Number(perPage),
+      sortBy,
+      sortOrder,
+      filter,
+    });
     res.json({
       status: 200,
       message: 'Successfully found contacts!',
@@ -59,7 +66,7 @@ export const patchContactController = async (req, res, next) => {
     }
     res.json({
       status: 200,
-      message: 'Successfully patched a contact!',
+      message: 'Successfully updated the contact!',
       data: contact,
     });
   } catch (err) {
