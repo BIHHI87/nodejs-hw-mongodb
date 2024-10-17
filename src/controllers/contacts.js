@@ -9,7 +9,7 @@ import {
 
 export const getContactsController = async (req, res, next) => {
   try {
-    const { page, perPage, sortBy, sortOrder, ...filter } = req.query;
+    const { page = 1, perPage = 10, sortBy = '_id', sortOrder = 'asc', ...filter } = req.query;
     const contacts = await getAllContacts({
       page: Number(page),
       perPage: Number(perPage),
@@ -20,7 +20,15 @@ export const getContactsController = async (req, res, next) => {
     res.json({
       status: 200,
       message: 'Successfully found contacts!',
-      data: contacts,
+      data: {
+        data: contacts.data,
+        page: Number(page),
+        perPage: Number(perPage),
+        totalItems: contacts.totalItems,
+        totalPages: contacts.totalPages,
+        hasPreviousPage: contacts.hasPreviousPage,
+        hasNextPage: contacts.hasNextPage,
+      },
     });
   } catch (err) {
     next(err);
