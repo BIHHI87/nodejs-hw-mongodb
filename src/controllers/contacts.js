@@ -1,26 +1,76 @@
-import createHttpError from 'http-errors';
-import { Contact } from '../db/models/Contact.js';
+import { Contact } from '../db/models/contact.js';
 
-export const getContactsController = async (req, res, next) => {
-    try {
-        const contacts = await Contact.find({ userId: req.user._id }); 
-        res.status(200).json({ status: 'success', data: contacts });
-    } catch (error) {
-        next(createHttpError(500, 'Internal Server Error'));
-    }
+export const getAllContacts = async (req, res) => {
+  try {
+    const { _id: userId } = req.user;
+    const contacts = await Contact.find({ userId });
+    res.json({ contacts });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch contacts' });
+  }
 };
 
-export const createContactController = async (req, res, next) => {
-    try {
-        const { name, phone } = req.body; 
-        const newContact = new Contact({ name, phone, userId: req.user._id }); 
-        await newContact.save();
-        res.status(201).json({
-            status: 'success',
-            message: 'Contact created successfully',
-            data: newContact
-        });
-    } catch (error) {
-        next(createHttpError(500, 'Internal Server Error'));
+export const getContactById = async (req, res) => {
+  try {
+    const { contactId } = req.params;
+    const { _id: userId } = req.user;
+    const contact = await Contact.findOne({ _id: contactId, userId });
+
+    if (!contact) {
+      return res.status(404).json({ message: 'Contact not found' });
     }
+
+    res.json({ contact });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch contact' });
+  }
+};
+
+export const createContact = async (req, res) => {
+  try {
+    const { _id: userId } = req.user;
+    const newContact = await Contact.create({ ...req.body, userId });
+    res.status(201).json({ contact: newContact });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to create contact' });
+  }
+};
+
+export const updateContact = async (req, res) => {
+  try {
+    const { contactId } = req.params;
+    const { _id: userId } = req.user;
+    const updatedContact = await Contact.findOneAndUpdate(
+      { _id: contactId, userId },
+      req.body,
+      { new: true }
+    );
+
+    if (!updatedContact) {
+      return res.status(404).json({ message: 'Contact not found' });
+    }
+
+    res.json({ contact: updatedContact });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update contact' });
+  }
+};
+
+export const deleteContact = async (req, res) => {
+  try {
+    const { contactId } = req.params;
+    const { _id: userId } = req.user;
+    const deletedContact = await Contact.findOneAndDelete({
+      _id: contactId,
+      userId,
+    });
+
+    if (!deletedContact) {
+      return res.status(404).json({ message: 'Contact not found' });
+    }
+
+    res.json({ message: 'Contact deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete contact' });
+  }
 };
