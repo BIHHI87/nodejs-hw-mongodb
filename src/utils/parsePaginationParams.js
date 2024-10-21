@@ -1,19 +1,21 @@
-export const parsePaginationParams = (query) => {
-  const page = parseInt(query.page) || 1;
-  const perPage = parseInt(query.perPage) || 10;
+const parseInteger = (value, defaultValue) => {
+    console.log(value);
+    if(typeof value !== "string") return defaultValue;
 
-  return {
-    page,
-    perPage,
-  };
+    const parsedValue = parseInt(value);
+    if(Number.isNaN(parsedValue)) return defaultValue;
+
+    return parsedValue;
 };
 
-export const parseSortParams = (query) => {
-  const sortBy = query.sortBy || 'name';
-  const sortOrder = query.sortOrder === 'desc' ? 'desc' : 'asc';
+const parsePaginationParams = ({perPage, page})=> {
+    const parsedPerPage = parseInteger(perPage, 10);
+    const parsedPage = parseInteger(page, 1);
 
-  return {
-    sortBy,
-    sortOrder,
-  };
+    return {
+        perPage: parsedPerPage,
+        page: parsedPage,
+    };
 };
+
+export default parsePaginationParams;

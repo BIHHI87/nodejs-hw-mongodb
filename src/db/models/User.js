@@ -1,30 +1,32 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
+import {Schema, model} from "mongoose";
 
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-  },
-  token: {
-    type: String,
-    default: null,
-  },
-});
+import { emailRegexp } from "../../constants/users.js";
 
-userSchema.methods.setPassword = function(password) {
-  this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-};
+import { handleSaveError, setUpdateOptions } from "./hooks.js";
 
-userSchema.methods.comparePassword = function(password) {
-  return bcrypt.compareSync(password, this.password);
-};
+const userSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        unique: true,
+        match: emailRegexp,
+        required: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    }
+}, {versionKey: false, timestamps: true});
 
-const User = mongoose.model('User', userSchema);
+userSchema.post("save", handleSaveError);
 
-export { User };
+userSchema.pre("findOneAndUpdate", setUpdateOptions);
+
+userSchema.post("findOneAndUpdate", handleSaveError);
+
+const UserCollection = model("user", userSchema);
+
+export default UserCollection;

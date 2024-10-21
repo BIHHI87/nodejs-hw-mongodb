@@ -1,25 +1,37 @@
-import jwt from 'jsonwebtoken';
-import { User } from '../db/models/User.js';
+import createHttpError from "http-errors";
 
-export const authenticate = async (req, res, next) => {
-  const { authorization = '' } = req.headers;
-  const [bearer, token] = authorization.split(' ');
+import * as authServices from "../services/auth.js";
 
-  if (bearer !== 'Bearer' || !token) {
-    return res.status(401).json({ message: 'Not authorized' });
-  }
+const authenticate = async(req, res, next)=> {
+    const authorization = req.get("Authorization");
 
-  try {
-    const { id } = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(id);
+    if(!authorization) {
+         return next(createHttpError(401, "Authorization header not found"));
+    }
 
-    if (!user || !user.token) {
-      return res.status(401).json({ message: 'Not authorized' });
+    const [bearer, token] = authorization.split(" ");
+
+    if(bearer !== "Bearer") {
+        return next(createHttpError(401, "Authorization header must have Bearer type"));
+    }
+
+    const session = await authServices.findSessionByAccessToken(token);
+    if(!session) {
+        return next(createHttpError(401, "Session not found"));
+    }
+
+    if(new Date() > session.accessTokenValidUntil) {
+        return next(createHttpError(401, "Access token expired"));
+    }
+
+    const user = await authServices.findUser({_id: session.userId});
+    if(!user) {
+        return next(createHttpError(401, "User not found"));
     }
 
     req.user = user;
+
     next();
-  } catch (error) {
-    res.status(401).json({ message: 'Not authorized' });
-  }
 };
+
+export default authenticate;
