@@ -6,10 +6,10 @@ import parseContactFilterParams from '../utils/filters/parseContactFilterParams.
 import { sortFields } from '../db/models/Contact.js';
 
 export const getAllContactsController = async (req, res) => {
-  const { perPage, page } = parsePaginationParams(req.query);
-  const { sortBy, sortOrder } = parseSortParams({ ...req.query, sortFields });
-  const filter = parseContactFilterParams(req.query);
-  const { _id: userId } = req.user;
+  const { perPage, page } = parsePaginationParams(req.query); 
+  const { sortBy, sortOrder } = parseSortParams({ ...req.query, sortFields }); 
+  const filter = parseContactFilterParams(req.query); 
+  const { _id: userId } = req.user; 
 
   const data = await contactServices.getContacts({
     perPage,
@@ -19,10 +19,23 @@ export const getAllContactsController = async (req, res) => {
     filter: { ...filter, userId },
   });
 
+  const totalItems = await contactServices.countContacts({ userId, ...filter });
+  const totalPages = Math.ceil(totalItems / perPage);
+  const hasPreviousPage = page > 1;
+  const hasNextPage = page < totalPages;
+
   res.json({
     status: 200,
     message: 'Successfully found contacts',
-    data,
+    data: {
+      data: data.contacts, 
+      page,
+      perPage,
+      totalItems,
+      totalPages,
+      hasPreviousPage,
+      hasNextPage,
+    },
   });
 };
 
