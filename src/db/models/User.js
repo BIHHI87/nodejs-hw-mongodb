@@ -21,6 +21,7 @@ const userSchema = new Schema({
     }
 }, {versionKey: false, timestamps: true});
 
+//hooks
 userSchema.post("save", handleSaveError);
 
 userSchema.pre("findOneAndUpdate", setUpdateOptions);

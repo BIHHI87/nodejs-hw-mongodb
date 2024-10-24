@@ -18,16 +18,14 @@ export const setupServer = () => {
   app.use(cors());
   app.use(express.json());
   app.use(cookieParser());
+  app.use(express.static("uploads"));
 
-  // 
   app.use("/auth", authRouter);
   app.use("/contacts", contactsRouter);
 
-  //
   app.use(notFoundHandler);
 
   app.use(errorHandler);
-  //
   const port = Number(env('PORT', 3000));
 
   app.listen(port, () => console.log(`Server running on port 3000`));
