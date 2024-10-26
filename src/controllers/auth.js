@@ -1,6 +1,14 @@
 import * as authServices from "../services/auth.js";
-import { requestResetToken } from '../services/auth.js';
-import { resetPassword } from '../services/auth.js';
+import { requestResetToken, resetPassword } from "../services/auth.js";
+import createHttpError from 'http-errors';
+import { env } from '../utils/env.js';
+
+const JWT_SECRET = env('JWT_SECRET');
+const JWT_SECRET_REFRESH = env('JWT_SECRET_REFRESH');
+
+if (!JWT_SECRET || !JWT_SECRET_REFRESH) {
+  throw new createHttpError(500, 'Missing JWT secrets in environment variables');
+}
 
 const setupSession = (res, session) => {
     res.cookie("refreshToken", session.refreshToken, {
@@ -14,7 +22,7 @@ const setupSession = (res, session) => {
     });
 };
 
-export const registerController = async(req, res)=> {
+export const registerController = async (req, res) => {
     const newUser = await authServices.register(req.body);
 
     res.status(201).json({
@@ -24,38 +32,38 @@ export const registerController = async(req, res)=> {
     });
 };
 
-export const loginController = async(req, res)=> {
+export const loginController = async (req, res) => {
     const session = await authServices.login(req.body);
 
     setupSession(res, session);
 
     res.json({
         status: 200,
-        message: "Successfully login",
+        message: "Successfully logged in",
         data: {
             accessToken: session.accessToken,
         }
     });
 };
 
-export const refreshController = async(req, res)=> {
-    const {refreshToken, sessionId} = req.cookies;
-    const session = await authServices.refreshSession({refreshToken, sessionId});
+export const refreshController = async (req, res) => {
+    const { refreshToken, sessionId } = req.cookies;
+    const session = await authServices.refreshSession({ refreshToken, sessionId });
     
     setupSession(res, session);
 
     res.json({
         status: 200,
-        message: "Successfully refresh session",
+        message: "Successfully refreshed session",
         data: {
             accessToken: session.accessToken,
         }
     });
 };
 
-export const logoutController = async(req, res)=> {
-    const {sessionId} = req.cookies;
-    if(sessionId) {
+export const logoutController = async (req, res) => {
+    const { sessionId } = req.cookies;
+    if (sessionId) {
         await authServices.logout(sessionId);
     }
 
@@ -65,22 +73,30 @@ export const logoutController = async(req, res)=> {
     res.status(204).send();
 };
 
-export const requestResetEmailController = async (req, res) => {
-    await requestResetToken(req.body.email);
+export const requestResetEmailController = async (req, res, next) => {
+    try {
+        await requestResetToken(req.body.email);
+      
+        res.status(200).json({
+            status: 200,
+            message: 'Reset password email was successfully sent!',
+            data: {},
+        });
+    } catch (error) {
+        next(error);
+    }
+};
   
-    res.status(200).json({
-      status: 200,
-      message: 'Reset password email was successfully sent!',
-      data: {},
-    });
-  };
-  
-  export const resetPasswordController = async (req, res) => {
-    await resetPassword(req.body);
-  
-    res.status(200).json({
-      status: 200,
-      message: 'Password was successfully reset!',
-      data: {},
-    });
-  };
+export const resetPasswordController = async (req, res, next) => {
+    try {
+        await resetPassword(req.body);
+      
+        res.status(200).json({
+            status: 200,
+            message: 'Password was successfully reset!',
+            data: {},
+        });
+    } catch (error) {
+        next(error);
+    }
+};
