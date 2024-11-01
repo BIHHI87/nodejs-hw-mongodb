@@ -109,7 +109,6 @@ export const getAllContactsController = async (req, res) => {
     const {id} = req.params;
     const {_id: userId} = req.user;
 
-    //6.2
     let photo;
     if (req.file) {
       if (enableCloudinary === "true") {
