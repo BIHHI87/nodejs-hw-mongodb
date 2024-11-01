@@ -1,35 +1,50 @@
-import ContactCollection from '../db/models/Contact.js';
+import ContactModel from '../db/models/Contact.js';
+import calculatePaginationData from '../utils/calculatePaginationData.js';
+import { SORT_ORDER } from '../constants/index.js';
 
-export const getContacts = async ({ perPage, page, sortBy, sortOrder, filter }) => {
-  const contacts = await ContactCollection.find({ userId: filter.userId })
-    .sort({ [sortBy]: sortOrder })
-    .skip((page - 1) * perPage)
-    .limit(perPage);
+export const getContacts = async ({ perPage,
+	page,
+	sortBy = 'name',
+	sortOrder = SORT_ORDER[0],
+	filter = {},
+}) => {
+	const skip = (page - 1) * perPage;
+	if (filter.userId) {
+		ContactModel.find().where("userId").eq(filter.userId);
+	}
+	const contacts = await ContactModel.find(filter).skip(skip).limit(perPage).sort({ [sortBy]: sortOrder });
+	const count = await ContactModel.find(filter).countDocuments();
+	// console.log(filter);
 
-  return contacts;
+	const paginationData = calculatePaginationData({ count, perPage, page });
+
+	return {
+		page,
+		perPage,
+		contacts,
+		totalItems: count,
+		...paginationData,
+	};
 };
 
-export const getContact = async (filter) => {
-  return ContactCollection.findOne(filter);
+export const getContact = (filter) => ContactModel.findById(filter);
+
+export const createContact = payload => ContactModel.create(payload);
+
+export const updateContact = async (filter, data, options = {}) => {
+	const rawResult = await ContactModel.findOneAndUpdate(filter, data, {
+		new: true,
+		runValidators: true,
+		includeResultMetadata: true,
+		...options,
+	});
+
+	if (!rawResult || !rawResult.value) return null;
+
+	return {
+		data: rawResult.value,
+		isNew: Boolean(rawResult?.lastErrorObject?.upserted),
+	};
 };
 
-export const createContact = async (data) => {
-  const newContact = new ContactCollection(data);
-  return await newContact.save();
-};
-
-export const updateContact = async (filter, update, options = {}) => {
-  const updatedContact = await ContactCollection.findOneAndUpdate(filter, update, {
-    new: true,
-    ...options,
-  });
-  
-  return {
-    isNew: options.upsert && updatedContact ? false : true,
-    data: updatedContact,
-  };
-};
-
-export const deleteContact = async (filter) => {
-  return ContactCollection.findOneAndDelete(filter);
-};
+export const deleteContact = filter => ContactModel.findOneAndDelete(filter);
