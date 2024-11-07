@@ -7,8 +7,7 @@ import { resetPasswordController } from '../controllers/auth.js';
 
 import { userRegisterSchema, userLoginSchema, sendResetEmailSchema } from '../validation/users.js';
 
-import { loginUserSchema } from '../validation/users.js';
-import { loginUserController } from '../controllers/auth.js';
+
 
 
 const authRouter = Router();
@@ -28,11 +27,5 @@ authRouter.post("/logout", ctrlWrapper(authControllers.logoutController));
 authRouter.post("/send-reset-email", validateBody(sendResetEmailSchema), ctrlWrapper(authControllers.sendResetEmailController));
 
 authRouter.post('/reset-pwd', validateBody(resetPasswordSchema), ctrlWrapper(resetPasswordController));
-
-router.post(
-  '/confirm-oauth',
-  validateBody(loginWithGoogleOAuthSchema),
-  ctrlWrapper(loginWithGoogleController),
-);
 
 export default authRouter;
