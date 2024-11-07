@@ -7,6 +7,7 @@ import errorHandler from './middlewares/errorHandler.js';
 import logger from './middlewares/logger.js';
 import authRouter from './routers/auth.js';
 import cookieParser from "cookie-parser";
+import { swaggerDocs } from "./middlewares/swaggerDocs.js";
 
 
 
@@ -14,10 +15,10 @@ import cookieParser from "cookie-parser";
 export const startServer = () => {
 	const app = express(); 
 
-	
-	app.use(cors());
+	app.use(cors()); 
 	app.use(express.json());
 	app.use(cookieParser());
+	app.use('/api-docs', swaggerDocs);
 	app.use(express.static("uploads"));
 
 
@@ -30,7 +31,7 @@ export const startServer = () => {
 
 	const port = Number(env('PORT', 3000));
 
-	app.listen(port, () => console.log(`Server is running on port ${port}`))
+	app.listen(port, () => console.log(`Server is running on port ${port}`))  
 
 
 
