@@ -14,8 +14,6 @@ const authRouter = Router();
 
 authRouter.get("/google-oauth-url", ctrlWrapper(authControllers.getGoogleOauthUrlController));
 
-authRouter.post("/confirm-google-auth", validateBody(userLoginWithGoogleOAuthSchema), ctrlWrapper(authControllers.loginWithGoogleOAuthController));
-
 authRouter.post("/register", validateBody(userRegisterSchema), ctrlWrapper(authControllers.registerController));
 
 authRouter.post("/login", validateBody(userLoginSchema), ctrlWrapper(authControllers.loginController));
