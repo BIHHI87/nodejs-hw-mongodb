@@ -53,15 +53,14 @@ export const getContactByIdController = async (req, res, next) => {
 export const addContactController = async (req, res) => {
 	let photo;
 	if (req.file) {
-		if (enableCloudinary === "true") {
-			photo = await saveFileToCloudinary(req.file, "photo");
-		} else {
-			photo = await saveFileToUploadDir(req.file);
-		}
+		photo = enableCloudinary === "true"
+			? await saveFileToCloudinary(req.file, "photo")
+			: await saveFileToUploadDir(req.file);
 	}
 
 	const { _id: userId } = req.user;
 	const contactData = { ...req.body, userId, photo };
+
 	delete contactData._id;
 	delete contactData.userId;
 
@@ -77,7 +76,8 @@ export const addContactController = async (req, res) => {
 export const upsertContactController = async (req, res) => {
 	const { id } = req.params;
 	const { _id: userId } = req.user;
-	const contactData = { ...req.body, userId };
+	const contactData = { ...req.body };
+
 	delete contactData._id;
 	delete contactData.userId;
 
@@ -95,7 +95,8 @@ export const upsertContactController = async (req, res) => {
 export const patchContactController = async (req, res) => {
 	const { id } = req.params;
 	const { _id: userId } = req.user;
-	const contactData = { ...req.body, userId };
+	const contactData = { ...req.body };
+
 	delete contactData._id;
 	delete contactData.userId;
 

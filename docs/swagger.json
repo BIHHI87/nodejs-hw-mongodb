@@ -88,17 +88,11 @@
         }
       },
       "delete": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Delete contact by id",
         "operationId": "deleteContactById",
         "description": "Delete contact by id",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
@@ -112,24 +106,26 @@
         ],
         "responses": {
           "204": {
-            "description": "Delete contact by id",
+            "description": "Contact deleted successfully"
+          },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": {
+            "description": "Contact not found",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "status"
-                  ],
                   "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 204
-                    }
+                    "status": { "type": "integer", "example": 404 },
+                    "message": { "type": "string", "example": "Contact not found" }
                   }
                 }
               }
             }
-          },
+          }
+        }
+      }
+    },
           "401": {
             "$ref": "#/components/responses/401"
           },
