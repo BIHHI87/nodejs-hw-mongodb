@@ -18,8 +18,9 @@ export const startServer = () => {
 	app.use(cors()); 
 	app.use(express.json());
 	app.use(cookieParser());
-	app.use('/api-docs', swaggerDocs);
+	app.use('/api-docs', ...swaggerDocs);
 	app.use(express.static("uploads"));
+    app.use(logger);
 
 
 	app.use('/auth', authRouter);
@@ -31,7 +32,7 @@ export const startServer = () => {
 
 	const port = Number(env('PORT', 3000));
 
-	app.listen(port, () => console.log(`Server is running on port ${port}`))  
+	app.listen(port, () => console.log(`Server is running on port ${port}`));
 
 
 
