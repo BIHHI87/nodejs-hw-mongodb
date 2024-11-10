@@ -8,7 +8,7 @@ const parseInteger = (value, defaultValue) => {
 	if (Number.isNaN(parsedValue)) return defaultValue;
 
 	return parsedValue;
-}
+};
 
 const parsePaginationParams = ({ perPage, page }) => {
 

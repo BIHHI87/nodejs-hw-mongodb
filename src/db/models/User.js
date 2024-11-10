@@ -1,9 +1,9 @@
 import { Schema, model } from "mongoose";
 import { handleSaveError, setUpdateOptions } from './hooks.js';
-// import { required } from "joi";
-import { emailRegexp } from '../../constants/users.js'
+import { emailRegexp } from '../../constants/users.js';
+import mongoose from 'mongoose';
 
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
 	name: {
 		type: String,
 		required: true,
@@ -27,6 +27,7 @@ userSchema.pre('findOneAndUpdate', setUpdateOptions);
 
 userSchema.post('findOneAndUpdate', handleSaveError);
 
-const UserCollection = model('user', userSchema);
+export const UserCollection = mongoose.model('User', userSchema);
 
 export default UserCollection;
+

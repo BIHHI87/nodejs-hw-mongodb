@@ -1,4 +1,3 @@
-import createHttpError from 'http-errors';
 import * as authServices from '../services/auth.js';
 import { requestResetToken, resetPassword } from '../services/auth.js';
 import { generateAuthUrl } from '../utils/googleOAuth2.js';
