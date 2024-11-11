@@ -59,12 +59,9 @@ export const addContactController = async (req, res) => {
 	}
 
 	const { _id: userId } = req.user;
-	const contactData = { ...req.body, userId, photo };
+	const contactData = { ...req.body, photo };
 
-	delete contactData._id;
-	delete contactData.userId;
-
-	const data = await contactServices.createContact(contactData);
+	const data = await contactServices.createContact({ ...contactData, userId });
 
 	res.status(201).json({
 		status: 201,
@@ -77,9 +74,6 @@ export const upsertContactController = async (req, res) => {
 	const { id } = req.params;
 	const { _id: userId } = req.user;
 	const contactData = { ...req.body };
-
-	delete contactData._id;
-	delete contactData.userId;
 
 	const { isNew, data } = await contactServices.updateContact({ _id: id, userId }, contactData, { upsert: true });
 
@@ -96,9 +90,6 @@ export const patchContactController = async (req, res) => {
 	const { id } = req.params;
 	const { _id: userId } = req.user;
 	const contactData = { ...req.body };
-
-	delete contactData._id;
-	delete contactData.userId;
 
 	const result = await contactServices.updateContact({ _id: id, userId }, contactData);
 
