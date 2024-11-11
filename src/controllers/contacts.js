@@ -113,5 +113,5 @@ export const deleteContactController = async (req, res) => {
 		return res.status(404).json({ message: "Contact not found" });
 	}
 
-	res.status(204).send();
+	res.status(204).end();
 };
