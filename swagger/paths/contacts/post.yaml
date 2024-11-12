@@ -22,11 +22,11 @@ requestBody:
           phoneNumber:
             description: "Contact's phone number"
             type: string
-            example: 999-99-00
+            example: '999-99-00'
           email:
             description: "Contact's email"
             type: string
-            example: billy@gmail.com
+            example: 'billy@gmail.com'
           isFavorite:
             description: 'Favorite contact'
             type: boolean
@@ -36,17 +36,13 @@ requestBody:
             type: string
             enum: ['work', 'home', 'personal']
             example: 'home'
-          userId:
-            description: "Contact's parent id"
-            type: string
-            example: 66f9655c2a221bae6e5d863b
           photo:
             description: "Link to contact's photo"
             type: string
             format: binary
 responses:
   '201':
-    description: Creates a contact
+    description: 'Successfully created a contact'
     content:
       application/json:
         schema:

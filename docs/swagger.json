@@ -112,23 +112,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Delete contact by id",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 204
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Contact deleted successfully, no content"
           },
           "401": {
             "$ref": "#/components/responses/401"
@@ -184,11 +168,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "_id": {
-                    "description": "Contact's id",
-                    "type": "string",
-                    "example": "66f95602862f79450d733026"
-                  },
                   "name": {
                     "description": "Contact's name",
                     "type": "string",
@@ -219,11 +198,6 @@
                     ],
                     "example": "work"
                   },
-                  "userId": {
-                    "description": "Contact's parent id",
-                    "type": "string",
-                    "example": "66fe6d0b5b7ffb5c70dfd498"
-                  },
                   "photo": {
                     "description": "Link to contact's photo",
                     "type": "string",
@@ -236,7 +210,7 @@
         },
         "responses": {
           "200": {
-            "description": "Get contact by id",
+            "description": "Successfully updated contact",
             "content": {
               "application/json": {
                 "schema": {
@@ -253,7 +227,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully patched a contact!"
+                      "example": "Successfully updated contact!"
                     },
                     "data": {
                       "type": "object",
@@ -344,11 +318,6 @@
                     ],
                     "example": "home"
                   },
-                  "userId": {
-                    "description": "Contact's parent id",
-                    "type": "string",
-                    "example": "66f9655c2a221bae6e5d863b"
-                  },
                   "photo": {
                     "description": "Link to contact's photo",
                     "type": "string",
@@ -361,7 +330,7 @@
         },
         "responses": {
           "201": {
-            "description": "Creates a contact",
+            "description": "Successfully created a contact",
             "content": {
               "application/json": {
                 "schema": {

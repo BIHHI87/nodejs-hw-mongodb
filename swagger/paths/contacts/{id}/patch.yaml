@@ -18,10 +18,6 @@ requestBody:
       schema:
         type: object
         properties:
-          _id:
-            description: "Contact's id"
-            type: string
-            example: 66f95602862f79450d733026
           name:
             description: "Contact's name"
             type: string
@@ -29,11 +25,11 @@ requestBody:
           phoneNumber:
             description: "Contact's phone number"
             type: string
-            example: 324-84-15
+            example: '324-84-15'
           email:
             description: "Contact's email"
             type: string
-            example: rudolf@mail.com
+            example: 'rudolf@mail.com'
           isFavorite:
             description: 'Favorite contact'
             type: boolean
@@ -43,17 +39,13 @@ requestBody:
             type: string
             enum: ['work', 'home', 'personal']
             example: 'work'
-          userId:
-            description: "Contact's parent id"
-            type: string
-            example: 66fe6d0b5b7ffb5c70dfd498
           photo:
             description: "Link to contact's photo"
             type: string
             format: binary
 responses:
   '200':
-    description: 'Get contact by id'
+    description: 'Successfully updated contact'
     content:
       application/json:
         schema:
@@ -68,7 +60,7 @@ responses:
               example: 200
             message:
               type: string
-              example: Successfully patched a contact!
+              example: Successfully updated contact!
             data:
               type: object
               $ref: '../../../components/schemas/contact.yaml'
